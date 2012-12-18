@@ -35,7 +35,7 @@ volatile unsigned *gpio;
 //
 // Set up a memory regions to access GPIO
 //
-void setup_io()
+void gpio_setup()
 {
    /* open /dev/mem */
    if ((mem_fd = open("/dev/mem", O_RDWR|O_SYNC) ) < 0) {
