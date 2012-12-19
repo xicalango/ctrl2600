@@ -31,7 +31,6 @@ int main(void)
     struct sockaddr_in my_addr;    // my address information
     struct sockaddr_in their_addr; // connector's address information
     socklen_t sin_size;
-    struct sigaction sa;
     int yes=1;
     
     int running = 1;
