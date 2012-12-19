@@ -17,6 +17,8 @@
 #include <signal.h>
 
 #include "packet2600.h"
+#include "ctrl2600.h"
+#include "gpio_driver.h"
 
 #define MYPORT 2600
 
@@ -34,6 +36,14 @@ int main(void)
     int yes=1;
     
     int running = 1;
+    
+    gpio_setup();
+	
+	USE_GPIO( GPIO_BUTTON );
+	USE_GPIO( GPIO_UP );
+	USE_GPIO( GPIO_DOWN );
+	USE_GPIO( GPIO_LEFT );
+	USE_GPIO( GPIO_RIGHT );
     
 
     if ((sockfd = socket(AF_INET, SOCK_STREAM, 0)) == -1) {
@@ -101,18 +111,23 @@ int main(void)
 					{
 						case BT_UP:
 							printf("UP pressed\n");
+							GPIO_SETX(GPIO_UP);
 							break;
 						case BT_DOWN:
 							printf("DOWN pressed\n");
+							GPIO_SETX(GPIO_DOWN);
 							break;
 						case BT_LEFT:
 							printf("LEFT pressed\n");
+							GPIO_SETX(GPIO_LEFT);
 							break;
 						case BT_RIGHT:
 							printf("RIGHT pressed\n");
+							GPIO_SETX(GPIO_RIGHT);
 							break;
 						case BT_BUTTON:
 							printf("BUTTON pressed\n");
+							GPIO_SETX(GPIO_BUTTON);
 							break;
 						default:
 							printf("%d pressed\n", button );
@@ -126,18 +141,23 @@ int main(void)
 					{
 						case BT_UP:
 							printf("UP released\n");
+							GPIO_CLRX(GPIO_UP);
 							break;
 						case BT_DOWN:
 							printf("DOWN released\n");
+							GPIO_CLRX(GPIO_DOWN);
 							break;
 						case BT_LEFT:
 							printf("LEFT released\n");
+							GPIO_CLRX(GPIO_LEFT);
 							break;
 						case BT_RIGHT:
 							printf("RIGHT released\n");
+							GPIO_CLRX(GPIO_RIGHT);
 							break;
 						case BT_BUTTON:
 							printf("BUTTON released\n");
+							GPIO_CLRX(GPIO_BUTTON);
 							break;
 						default:
 							printf("%d pressed\n", button );

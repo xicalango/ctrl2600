@@ -14,13 +14,12 @@
 
 #include "sdl2600.h"
 #include "packet2600.h"
-#include "ctrl2600.h"
-#include "gpio_driver.h"
 
 #define PORT 2600
 
 int network_setup( char* hostname, int port )
 {
+	int sockfd;
 	struct hostent *he;
     struct sockaddr_in their_addr; // connector's address information 
 
@@ -57,17 +56,16 @@ char buildQuitMessage( )
 	return 1;
 }
 
-void sendmsg( int fd, char msg )
+void send2600msg( int fd, char msg )
 {
-	buf[0] = msg;
+	char buf[1] = {msg};
 	if (send(fd, buf, 1, 0) == -1)
     	perror("send");
 }
 
 int main( int argc, char *argv[] )
 {
-	int sockfd, numbytes;
-	char buf[1];
+	int sockfd;
 	
     if (argc != 2) {
 		sockfd = network_setup( "localhost", PORT );
@@ -78,14 +76,6 @@ int main( int argc, char *argv[] )
 	//SDL_Surface* screen = NULL;
 	SDL_Event event;
 	int running = 0;
-
-	gpio_setup();
-	
-	USE_GPIO( GPIO_BUTTON );
-	USE_GPIO( GPIO_UP );
-	USE_GPIO( GPIO_DOWN );
-	USE_GPIO( GPIO_LEFT );
-	USE_GPIO( GPIO_RIGHT );
 
 	SDL_Init( SDL_INIT_VIDEO );
 	
@@ -102,19 +92,19 @@ int main( int argc, char *argv[] )
 				switch( event.key.keysym.sym )
 				{
 					case SDLK_UP:
-						sendmsg( sockfd, buildButtonMessage( BE_PRESS, BT_UP ) );
+						send2600msg( sockfd, buildButtonMessage( BE_PRESS, BT_UP ) );
 						break;
 					case SDLK_DOWN:
-						sendmsg( sockfd, buildButtonMessage( BE_PRESS, BT_DOWN ) );
+						send2600msg( sockfd, buildButtonMessage( BE_PRESS, BT_DOWN ) );
 						break;
 					case SDLK_LEFT:
-						sendmsg( sockfd, buildButtonMessage( BE_PRESS, BT_LEFT ) );
+						send2600msg( sockfd, buildButtonMessage( BE_PRESS, BT_LEFT ) );
 						break;
 					case SDLK_RIGHT:
-						sendmsg( sockfd, buildButtonMessage( BE_PRESS, BT_RIGHT ) );
+						send2600msg( sockfd, buildButtonMessage( BE_PRESS, BT_RIGHT ) );
 						break;
 					case SDLK_SPACE:
-						sendmsg( sockfd, buildButtonMessage( BE_PRESS, BT_SPACE ) );
+						send2600msg( sockfd, buildButtonMessage( BE_PRESS, BT_BUTTON ) );
 						break;
 					case SDLK_q:
 						running = 0;
@@ -128,19 +118,19 @@ int main( int argc, char *argv[] )
 				switch( event.key.keysym.sym )
 				{
 					case SDLK_UP:
-						sendmsg( sockfd, buildButtonMessage( BE_RELEASE, BT_UP ) );
+						send2600msg( sockfd, buildButtonMessage( BE_RELEASE, BT_UP ) );
 						break;
 					case SDLK_DOWN:
-						sendmsg( sockfd, buildButtonMessage( BE_RELEASE, BT_DOWN ) );
+						send2600msg( sockfd, buildButtonMessage( BE_RELEASE, BT_DOWN ) );
 						break;
 					case SDLK_LEFT:
-						sendmsg( sockfd, buildButtonMessage( BE_RELEASE, BT_LEFT ) );
+						send2600msg( sockfd, buildButtonMessage( BE_RELEASE, BT_LEFT ) );
 						break;
 					case SDLK_RIGHT:
-						sendmsg( sockfd, buildButtonMessage( BE_RELEASE, BT_RIGHT ) );
+						send2600msg( sockfd, buildButtonMessage( BE_RELEASE, BT_RIGHT ) );
 						break;
 					case SDLK_SPACE:
-						sendmsg( sockfd, buildButtonMessage( BE_RELEASE, BT_SPACE ) );
+						send2600msg( sockfd, buildButtonMessage( BE_RELEASE, BT_BUTTON ) );
 						break;
 					default:
 						break;
@@ -153,7 +143,7 @@ int main( int argc, char *argv[] )
 		}
 	}
 	
-	sendmsg( sockfd, buildQuitMessage( ) );
+	send2600msg( sockfd, buildQuitMessage( ) );
 	
 	close( sockfd );
 	
